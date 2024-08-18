@@ -1,11 +1,8 @@
-# Welcome to your Jupyter Book
+# Welcome to SUROP Project
 
-This is a small sample book to give you a feel for how book content is
-structured.
-It shows off a few of the major file types, as well as some sample content.
-It does not go in-depth into any particular topic - check out [the Jupyter Book documentation](https://jupyterbook.org) for more information.
+This is a Summer Undergraduate Project, which focuses on exploring different resolutions for integrating multiple time-series.
 
-Check out the content pages bundled with this sample book to see more.
+Faculty Advisor: Weining Shen
 
 ```{tableofcontents}
 ```
