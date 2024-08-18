@@ -15,6 +15,10 @@ latex:
   latex_documents:
     targetname: book.tex
 
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+  - references.bib
+
 # Information about where the book exists on the web
 repository:
   url: https://henryyang03.github.io/SUROP_time_series/intro.html  # Online location of your book
