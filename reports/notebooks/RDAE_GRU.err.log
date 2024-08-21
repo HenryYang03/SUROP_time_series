@@ -38,11 +38,6 @@ The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
 # Train the autoencoder
-optimizer = Adam()
-rdae.compile(optimizer = optimizer, loss='mae')
-rdae.fit(X_train_filled, X_train_filled, epochs=20, batch_size=64, validation_split=0.1)
-
-# Use the trained autoencoder to impute missing values
-X_train_rdae_imputed = rdae.predict(X_train_filled)
+rdae.fit(X_train_filled, X_train_filled, epochs=20, batch_size=16, validation_split=0.1)
 -------------------
 

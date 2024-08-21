@@ -386,11 +386,12 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">Model</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">GRU</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">RepeatVector</span><span class="p">,</span> <span class="n">TimeDistributed</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">GRU</span><span class="p">,</span> <span class="n">LSTM</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span><span class="p">,</span> <span class="n">RepeatVector</span><span class="p">,</span> <span class="n">TimeDistributed</span><span class="p">,</span> <span class="n">Dense</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.regularizers</span> <span class="kn">import</span> <span class="n">l2</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">MinMaxScaler</span>
 </pre></div>
 </div>
 </div>
@@ -475,6 +476,330 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">columns_to_exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">,</span> <span class="s1">&#39;Hour&#39;</span><span class="p">,</span> <span class="s1">&#39;Gender&#39;</span><span class="p">]</span>
+<span class="n">columns_to_scale</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">train_x</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">columns_to_exclude</span><span class="p">]</span>
+
+<span class="c1">#Z-Score standardization</span>
+<span class="n">scaler</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
+<span class="n">train_x</span><span class="p">[</span><span class="n">columns_to_scale</span><span class="p">]</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train_x</span><span class="p">[</span><span class="n">columns_to_scale</span><span class="p">])</span>
+<span class="n">train_x</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Hour</th>
+      <th>ID</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th>Unit1</th>
+      <th>Unit2</th>
+      <th>HR</th>
+      <th>O2Sat</th>
+      <th>Temp</th>
+      <th>SBP</th>
+      <th>...</th>
+      <th>Phosphate</th>
+      <th>Potassium</th>
+      <th>Bilirubin_total</th>
+      <th>TroponinI</th>
+      <th>Hct</th>
+      <th>Hgb</th>
+      <th>PTT</th>
+      <th>WBC</th>
+      <th>Fibrinogen</th>
+      <th>Platelets</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>2</td>
+      <td>0.606512</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.279669</td>
+      <td>0.969675</td>
+      <td>0.686651</td>
+      <td>0.366349</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>0.274306</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.384131</td>
+      <td>0.305192</td>
+      <td>NaN</td>
+      <td>0.025537</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>2</td>
+      <td>0.606512</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.279669</td>
+      <td>0.969675</td>
+      <td>0.686651</td>
+      <td>0.366349</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>0.274306</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.384131</td>
+      <td>0.305192</td>
+      <td>NaN</td>
+      <td>0.025537</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>2</td>
+      <td>0.606512</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.279669</td>
+      <td>0.969675</td>
+      <td>0.686651</td>
+      <td>0.366349</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>0.274306</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.384131</td>
+      <td>0.305192</td>
+      <td>NaN</td>
+      <td>0.025537</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>2</td>
+      <td>0.606512</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.279669</td>
+      <td>0.969675</td>
+      <td>0.686651</td>
+      <td>0.366349</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>0.274306</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.384131</td>
+      <td>0.305192</td>
+      <td>NaN</td>
+      <td>0.025537</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>2</td>
+      <td>0.606512</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>0.326289</td>
+      <td>0.963829</td>
+      <td>0.686651</td>
+      <td>0.341142</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>0.274306</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.384131</td>
+      <td>0.305192</td>
+      <td>NaN</td>
+      <td>0.025537</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>482005</th>
+      <td>15</td>
+      <td>21633</td>
+      <td>0.513758</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.352452</td>
+      <td>0.943003</td>
+      <td>0.724590</td>
+      <td>0.285567</td>
+      <td>...</td>
+      <td>0.158613</td>
+      <td>0.226562</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.394177</td>
+      <td>0.347404</td>
+      <td>0.053781</td>
+      <td>0.053237</td>
+      <td>NaN</td>
+      <td>0.070632</td>
+    </tr>
+    <tr>
+      <th>482006</th>
+      <td>16</td>
+      <td>21633</td>
+      <td>0.513758</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.343312</td>
+      <td>0.968092</td>
+      <td>0.730679</td>
+      <td>0.265345</td>
+      <td>...</td>
+      <td>0.158613</td>
+      <td>0.226562</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.394177</td>
+      <td>0.347404</td>
+      <td>0.053781</td>
+      <td>0.053237</td>
+      <td>NaN</td>
+      <td>0.070632</td>
+    </tr>
+    <tr>
+      <th>482007</th>
+      <td>17</td>
+      <td>21633</td>
+      <td>0.513758</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.338959</td>
+      <td>0.960175</td>
+      <td>0.730679</td>
+      <td>0.271255</td>
+      <td>...</td>
+      <td>0.158613</td>
+      <td>0.226562</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.394177</td>
+      <td>0.347404</td>
+      <td>0.053781</td>
+      <td>0.053237</td>
+      <td>NaN</td>
+      <td>0.070632</td>
+    </tr>
+    <tr>
+      <th>482008</th>
+      <td>18</td>
+      <td>21633</td>
+      <td>0.513758</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.338959</td>
+      <td>0.960175</td>
+      <td>0.730679</td>
+      <td>0.278838</td>
+      <td>...</td>
+      <td>0.158613</td>
+      <td>0.226562</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.374085</td>
+      <td>0.347404</td>
+      <td>0.053781</td>
+      <td>0.053237</td>
+      <td>NaN</td>
+      <td>0.070632</td>
+    </tr>
+    <tr>
+      <th>482009</th>
+      <td>19</td>
+      <td>21633</td>
+      <td>0.513758</td>
+      <td>1.0</td>
+      <td>1.0</td>
+      <td>0.0</td>
+      <td>0.354048</td>
+      <td>0.965169</td>
+      <td>0.730679</td>
+      <td>0.235901</td>
+      <td>...</td>
+      <td>0.158613</td>
+      <td>0.226562</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.370509</td>
+      <td>0.347404</td>
+      <td>0.053781</td>
+      <td>0.053237</td>
+      <td>NaN</td>
+      <td>0.070632</td>
+    </tr>
+  </tbody>
+</table>
+<p>482010 rows × 40 columns</p>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get unique person IDs</span>
 <span class="n">person_ids</span> <span class="o">=</span> <span class="n">train_x</span><span class="p">[</span><span class="s1">&#39;ID&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 
@@ -525,55 +850,91 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[[  1.  ,  66.67,   1.  , ...,   8.15,    nan,    nan],
-        [  2.  ,  66.67,   1.  , ...,   8.15,    nan,    nan],
-        [  3.  ,  66.67,   1.  , ...,   8.15,    nan,    nan],
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([[[1.        , 0.60651227, 1.        , ..., 0.02553738,
+                nan,        nan],
+        [2.        , 0.60651227, 1.        , ..., 0.02553738,
+                nan,        nan],
+        [3.        , 0.60651227, 1.        , ..., 0.02553738,
+                nan,        nan],
         ...,
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ]],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ]],
 
-       [[  1.  ,  79.74,   0.  , ...,   6.82, 267.01, 281.18],
-        [  2.  ,  79.74,   0.  , ...,   6.82, 267.01, 281.18],
-        [  3.  ,  79.74,   0.  , ...,   6.82, 267.01, 281.18],
+       [[1.        , 0.75636322, 0.        , ..., 0.02136993,
+         0.1769439 , 0.11987338],
+        [2.        , 0.75636322, 0.        , ..., 0.02136993,
+         0.1769439 , 0.11987338],
+        [3.        , 0.75636322, 0.        , ..., 0.02136993,
+         0.1769439 , 0.11987338],
         ...,
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ]],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ]],
 
-       [[  1.  ,  60.74,   1.  , ...,  12.45,    nan,  84.77],
-        [  2.  ,  60.74,   1.  , ...,  12.45,    nan,  84.77],
-        [  3.  ,  60.74,   1.  , ...,  12.45,    nan,  84.77],
+       [[1.        , 0.53852327, 1.        , ..., 0.03901109,
+                nan, 0.03516936],
+        [2.        , 0.53852327, 1.        , ..., 0.03901109,
+                nan, 0.03516936],
+        [3.        , 0.53852327, 1.        , ..., 0.03901109,
+                nan, 0.03516936],
         ...,
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ]],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ]],
 
        ...,
 
-       [[  1.  ,  65.41,   1.  , ...,  21.87,    nan, 303.89],
-        [  2.  ,  65.41,   1.  , ...,  21.87,    nan, 303.89],
-        [  3.  ,  65.41,   1.  , ...,  21.87,    nan, 303.89],
+       [[1.        , 0.59206604, 1.        , ..., 0.06852792,
+                nan, 0.12966733],
+        [2.        , 0.59206604, 1.        , ..., 0.06852792,
+                nan, 0.12966733],
+        [3.        , 0.59206604, 1.        , ..., 0.06852792,
+                nan, 0.12966733],
         ...,
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ]],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ]],
 
-       [[  1.  ,  58.61,   1.  , ...,  45.9 ,    nan, 302.32],
-        [  2.  ,  58.61,   1.  , ...,  45.9 ,    nan, 302.32],
-        [  3.  ,  58.61,   1.  , ...,  45.9 ,    nan, 302.32],
+       [[1.        , 0.51410227, 1.        , ..., 0.14382403,
+                nan, 0.12899024],
+        [2.        , 0.51410227, 1.        , ..., 0.14382403,
+                nan, 0.12899024],
+        [3.        , 0.51410227, 1.        , ..., 0.14382403,
+                nan, 0.12899024],
         ...,
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ]],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ]],
 
-       [[  1.  ,  58.58,   1.  , ...,  17.02,    nan, 167.  ],
-        [  2.  ,  58.58,   1.  , ...,  17.02,    nan, 167.  ],
-        [  3.  ,  58.58,   1.  , ...,  17.02,    nan, 167.  ],
+       [[1.        , 0.51375831, 1.        , ..., 0.05333083,
+                nan, 0.07063197],
+        [2.        , 0.51375831, 1.        , ..., 0.05333083,
+                nan, 0.07063197],
+        [3.        , 0.51375831, 1.        , ..., 0.05333083,
+                nan, 0.07063197],
         ...,
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ],
-        [  0.  ,   0.  ,   0.  , ...,   0.  ,   0.  ,   0.  ]]])
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+        [0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ]]])
 </pre></div>
 </div>
 </div>
@@ -625,16 +986,27 @@ document.write(`
     <span class="n">inputs</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">)</span>
     
     <span class="c1"># Encoder</span>
-    <span class="n">encoded</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
-    <span class="n">encoded</span> <span class="o">=</span> <span class="n">RepeatVector</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])(</span><span class="n">encoded</span><span class="p">)</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">encoded</span><span class="p">)</span>
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
+    
+    <span class="n">encoded</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">False</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
     
     <span class="c1"># Decoder</span>
-    <span class="n">decoded</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">encoded</span><span class="p">)</span>
-    <span class="n">decoded</span> <span class="o">=</span> <span class="n">TimeDistributed</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))(</span><span class="n">decoded</span><span class="p">)</span>
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">RepeatVector</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])(</span><span class="n">encoded</span><span class="p">)</span>
+    
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
+    
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">LSTM</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span><span class="p">)(</span><span class="n">decoded</span><span class="p">)</span>
+    <span class="n">decoded</span> <span class="o">=</span> <span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">decoded</span><span class="p">)</span>
+    
+    <span class="c1"># Reconstruction Layer</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">TimeDistributed</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))(</span><span class="n">decoded</span><span class="p">)</span>
     
     <span class="c1"># Define the model</span>
-    <span class="n">autoencoder</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">decoded</span><span class="p">)</span>
-    <span class="n">autoencoder</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">)</span>
+    <span class="n">autoencoder</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+    <span class="n">autoencoder</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mae&#39;</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">autoencoder</span>
 </pre></div>
@@ -644,7 +1016,13 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
 <span class="n">rdae</span> <span class="o">=</span> <span class="n">build_rdae</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(336, 39)
 </pre></div>
 </div>
 </div>
@@ -653,9 +1031,6 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#data with missing values replaced by zero</span>
 <span class="n">X_train_filled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
-
-<span class="c1"># Normalize the data to be between 0 and 1</span>
-<span class="n">X_train_filled</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_train_filled</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">))</span>
 </pre></div>
 </div>
 </div>
@@ -663,12 +1038,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train the autoencoder</span>
-<span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">()</span>
-<span class="n">rdae</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mae&#39;</span><span class="p">)</span>
-<span class="n">rdae</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">,</span> <span class="n">X_train_filled</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-
-<span class="c1"># Use the trained autoencoder to impute missing values</span>
-<span class="n">X_train_rdae_imputed</span> <span class="o">=</span> <span class="n">rdae</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">)</span>
+<span class="n">rdae</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">,</span> <span class="n">X_train_filled</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -676,213 +1046,94 @@ document.write(`
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1/20
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">  1/137</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:58</span> 5s/step - loss: 0.0281
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span><span class=" -Color -Color-Bold">  1/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">53:06</span> 6s/step - loss: 0.3490
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  2/137</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:09</span> 514ms/step - loss: 0.0272
+<span class=" -Color -Color-Bold">  2/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">9:11</span> 1s/step - loss: nan    
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  3/137</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:08</span> 510ms/step - loss: 0.0263
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  3/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:46</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  4/137</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:06</span> 503ms/step - loss: 0.0254
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  4/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11:16</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  5/137</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:05</span> 499ms/step - loss: 0.0245
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  5/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11:27</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  6/137</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:05</span> 497ms/step - loss: 0.0238
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  6/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11:22</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  7/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:04</span> 496ms/step - loss: 0.0230
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  7/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11:20</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  8/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:03</span> 495ms/step - loss: 0.0224
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  8/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11:14</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold">  9/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:03</span> 495ms/step - loss: 0.0217
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold">  9/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">11:05</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 10/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:02</span> 495ms/step - loss: 0.0211
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 10/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:52</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 11/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:02</span> 494ms/step - loss: 0.0205
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 11/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:47</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 12/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:01</span> 494ms/step - loss: 0.0200
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 12/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:54</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 13/137</span> <span class=" -Color -Color-Green">━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:01</span> 494ms/step - loss: 0.0195
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 13/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:50</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 14/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:00</span> 494ms/step - loss: 0.0190
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 14/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:49</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 15/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">1:00</span> 493ms/step - loss: 0.0185
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 15/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:40</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 16/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">59s</span> 493ms/step - loss: 0.0181 
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 16/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:31</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 17/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">59s</span> 493ms/step - loss: 0.0177
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 17/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:29</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 18/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">58s</span> 493ms/step - loss: 0.0173
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 18/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:26</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 19/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">58s</span> 493ms/step - loss: 0.0169
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 19/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:15</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 20/137</span> <span class=" -Color -Color-Green">━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">57s</span> 493ms/step - loss: 0.0165
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 20/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:12</span> 1s/step - loss: nan
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 21/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">57s</span> 496ms/step - loss: 0.0162
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 22/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">57s</span> 496ms/step - loss: 0.0159
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 23/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">56s</span> 496ms/step - loss: 0.0156
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 24/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">56s</span> 497ms/step - loss: 0.0153
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 25/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">55s</span> 499ms/step - loss: 0.0150
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 26/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">55s</span> 499ms/step - loss: 0.0147
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 27/137</span> <span class=" -Color -Color-Green">━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">54s</span> 499ms/step - loss: 0.0145
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 28/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">54s</span> 499ms/step - loss: 0.0142
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 29/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">53s</span> 499ms/step - loss: 0.0140
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 30/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">53s</span> 500ms/step - loss: 0.0138
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 31/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">52s</span> 500ms/step - loss: 0.0135
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 32/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">52s</span> 500ms/step - loss: 0.0133
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 33/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">52s</span> 500ms/step - loss: 0.0131
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 34/137</span> <span class=" -Color -Color-Green">━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">51s</span> 500ms/step - loss: 0.0129
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 35/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">51s</span> 500ms/step - loss: 0.0127
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 36/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">50s</span> 501ms/step - loss: 0.0126
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 37/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">50s</span> 501ms/step - loss: 0.0124
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 38/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">49s</span> 502ms/step - loss: 0.0122
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 39/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">49s</span> 502ms/step - loss: 0.0120
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 40/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">48s</span> 503ms/step - loss: 0.0119
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 41/137</span> <span class=" -Color -Color-Green">━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">48s</span> 502ms/step - loss: 0.0117
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 42/137</span> <span class=" -Color -Color-Green">━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">47s</span> 502ms/step - loss: 0.0116
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 43/137</span> <span class=" -Color -Color-Green">━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">47s</span> 502ms/step - loss: 0.0114
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 44/137</span> <span class=" -Color -Color-Green">━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">46s</span> 503ms/step - loss: 0.0113
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 45/137</span> <span class=" -Color -Color-Green">━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">46s</span> 503ms/step - loss: 0.0112
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 46/137</span> <span class=" -Color -Color-Green">━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">45s</span> 503ms/step - loss: 0.0110
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 47/137</span> <span class=" -Color -Color-Green">━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">45s</span> 503ms/step - loss: 0.0109
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 48/137</span> <span class=" -Color -Color-Green">━━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">44s</span> 503ms/step - loss: 0.0108
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 49/137</span> <span class=" -Color -Color-Green">━━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">44s</span> 503ms/step - loss: 0.0107
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
-<span class=" -Color -Color-Bold"> 50/137</span> <span class=" -Color -Color-Green">━━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">43s</span> 503ms/step - loss: 0.0105
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<span class=" -Color -Color-Bold"> 21/546</span> <span class=" -Color -Color-White">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10:13</span> 1s/step - loss: nan
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">17</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">rdae</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mae&#39;</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">rdae</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">,</span> <span class="n">X_train_filled</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="c1"># Use the trained autoencoder to impute missing values</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">X_train_rdae_imputed</span> <span class="o">=</span> <span class="n">rdae</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">)</span>
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">18</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># Train the autoencoder</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">rdae</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">,</span> <span class="n">X_train_filled</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
 <span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py:117,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
 <span class="g g-Whitespace">    </span><span class="mi">115</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
@@ -990,6 +1241,15 @@ document.write(`
 <span class="g g-Whitespace">     </span><span class="mi">56</span>   <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
 <span class="ne">KeyboardInterrupt</span>: 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the trained autoencoder to impute missing values</span>
+<span class="n">X_train_rdae_imputed</span> <span class="o">=</span> <span class="n">rdae</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train_filled</span><span class="p">)</span>
+<span class="n">X_train_rdae_imputed</span>
 </pre></div>
 </div>
 </div>
@@ -1027,213 +1287,6 @@ document.write(`
 <span class="n">model_gru_rdae</span> <span class="o">=</span> <span class="n">create_gru_model</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
 
 <span class="n">history</span> <span class="o">=</span> <span class="n">model_gru_rdae</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_rdae_imputed</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">24s</span> 45ms/step - AUC: 0.5017 - loss: 0.5034 - val_AUC: 0.5000 - val_loss: 0.4163
-Epoch 2/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">22s</span> 44ms/step - AUC: 0.4952 - loss: 0.3927 - val_AUC: 0.5000 - val_loss: 0.4164
-Epoch 3/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.4638 - loss: 0.4026 - val_AUC: 0.4997 - val_loss: 0.4137
-Epoch 4/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.4756 - loss: 0.3977 - val_AUC: 0.5000 - val_loss: 0.4156
-Epoch 5/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.5079 - loss: 0.4068 - val_AUC: 0.5000 - val_loss: 0.4261
-Epoch 6/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">22s</span> 45ms/step - AUC: 0.4770 - loss: 0.4028 - val_AUC: 0.5000 - val_loss: 0.4167
-Epoch 7/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.5100 - loss: 0.3867 - val_AUC: 0.5000 - val_loss: 0.4127
-Epoch 8/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.4911 - loss: 0.3979 - val_AUC: 0.5000 - val_loss: 0.4237
-Epoch 9/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.4876 - loss: 0.3879 - val_AUC: 0.5000 - val_loss: 0.4122
-Epoch 10/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">22s</span> 44ms/step - AUC: 0.5031 - loss: 0.3848 - val_AUC: 0.5000 - val_loss: 0.4125
-Epoch 11/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.4840 - loss: 0.3880 - val_AUC: 0.5000 - val_loss: 0.4119
-Epoch 12/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">21s</span> 44ms/step - AUC: 0.4989 - loss: 0.4006 - val_AUC: 0.5000 - val_loss: 0.4200
-Epoch 13/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 36ms/step - AUC: 0.5130 - loss: 0.3966 - val_AUC: 0.5003 - val_loss: 0.4120
-Epoch 14/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 36ms/step - AUC: 0.4841 - loss: 0.3967 - val_AUC: 0.5000 - val_loss: 0.4455
-Epoch 15/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5087 - loss: 0.4016 - val_AUC: 0.5000 - val_loss: 0.4119
-Epoch 16/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4771 - loss: 0.4060 - val_AUC: 0.4997 - val_loss: 0.4132
-Epoch 17/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4866 - loss: 0.4019 - val_AUC: 0.5000 - val_loss: 0.4137
-Epoch 18/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 35ms/step - AUC: 0.5022 - loss: 0.3946 - val_AUC: 0.5000 - val_loss: 0.4143
-Epoch 19/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 35ms/step - AUC: 0.4787 - loss: 0.3993 - val_AUC: 0.5000 - val_loss: 0.4124
-Epoch 20/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 35ms/step - AUC: 0.4808 - loss: 0.3948 - val_AUC: 0.5000 - val_loss: 0.4127
-Epoch 21/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 35ms/step - AUC: 0.4956 - loss: 0.3926 - val_AUC: 0.5000 - val_loss: 0.4111
-Epoch 22/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 35ms/step - AUC: 0.4766 - loss: 0.4055 - val_AUC: 0.5000 - val_loss: 0.4133
-Epoch 23/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 34ms/step - AUC: 0.5082 - loss: 0.3971 - val_AUC: 0.5000 - val_loss: 0.4115
-Epoch 24/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">16s</span> 34ms/step - AUC: 0.4968 - loss: 0.3853 - val_AUC: 0.5000 - val_loss: 0.4110
-Epoch 25/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5153 - loss: 0.3921 - val_AUC: 0.5000 - val_loss: 0.4109
-Epoch 26/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4940 - loss: 0.3921 - val_AUC: 0.5000 - val_loss: 0.4127
-Epoch 27/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 36ms/step - AUC: 0.5009 - loss: 0.3949 - val_AUC: 0.5000 - val_loss: 0.4127
-Epoch 28/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5051 - loss: 0.3887 - val_AUC: 0.5000 - val_loss: 0.4109
-Epoch 29/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">17s</span> 36ms/step - AUC: 0.4983 - loss: 0.3921 - val_AUC: 0.5000 - val_loss: 0.4122
-Epoch 30/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4776 - loss: 0.3862 - val_AUC: 0.5000 - val_loss: 0.4109
-Epoch 31/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5015 - loss: 0.3817 - val_AUC: 0.5000 - val_loss: 0.4113
-Epoch 32/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 38ms/step - AUC: 0.4826 - loss: 0.3978 - val_AUC: 0.5000 - val_loss: 0.4118
-Epoch 33/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4975 - loss: 0.3955 - val_AUC: 0.5000 - val_loss: 0.4120
-Epoch 34/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4904 - loss: 0.3882 - val_AUC: 0.5000 - val_loss: 0.4109
-Epoch 35/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5054 - loss: 0.3907 - val_AUC: 0.5000 - val_loss: 0.4109
-Epoch 36/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5019 - loss: 0.3971 - val_AUC: 0.5000 - val_loss: 0.4111
-Epoch 37/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4609 - loss: 0.4021 - val_AUC: 0.5000 - val_loss: 0.4108
-Epoch 38/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5122 - loss: 0.3966 - val_AUC: 0.5000 - val_loss: 0.4110
-Epoch 39/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 36ms/step - AUC: 0.4863 - loss: 0.3930 - val_AUC: 0.5000 - val_loss: 0.4107
-Epoch 40/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 36ms/step - AUC: 0.4985 - loss: 0.3988 - val_AUC: 0.5000 - val_loss: 0.4119
-Epoch 41/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.4981 - loss: 0.3954 - val_AUC: 0.5000 - val_loss: 0.4114
-Epoch 42/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5031 - loss: 0.3977 - val_AUC: 0.5000 - val_loss: 0.4107
-Epoch 43/50
-<span class=" -Color -Color-Bold">485/485</span> <span class=" -Color -Color-Green">━━━━━━━━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">18s</span> 37ms/step - AUC: 0.5001 - loss: 0.4089 - val_AUC: 0.5000 - val_loss: 0.4116
-Epoch 44/50
-<span class=" -Color -Color-Bold">175/485</span> <span class=" -Color -Color-Green">━━━━━━━</span><span class=" -Color -Color-White">━━━━━━━━━━━━━</span> <span class=" -Color -Color-Bold">10s</span> 35ms/step - AUC: 0.4725 - loss: 0.4037
-</pre></div>
-</div>
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">318</span><span class="p">],</span> <span class="n">line</span> <span class="mi">4</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_hours</span><span class="p">,</span> <span class="n">num_features</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">model_gru_rdae</span> <span class="o">=</span> <span class="n">create_gru_model</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
-<span class="ne">----&gt; </span><span class="mi">4</span> <span class="n">history</span> <span class="o">=</span> <span class="n">model_gru_rdae</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train_rdae_imputed</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py:117,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">115</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">116</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">117</span>     <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">118</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">119</span>     <span class="n">filtered_tb</span> <span class="o">=</span> <span class="n">_process_traceback_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/keras/src/backend/tensorflow/trainer.py:314,</span> in <span class="ni">TensorFlowTrainer.fit</span><span class="nt">(self, x, y, batch_size, epochs, verbose, callbacks, validation_split, validation_data, shuffle, class_weight, sample_weight, initial_epoch, steps_per_epoch, validation_steps, validation_batch_size, validation_freq)</span>
-<span class="g g-Whitespace">    </span><span class="mi">312</span> <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">iterator</span> <span class="ow">in</span> <span class="n">epoch_iterator</span><span class="o">.</span><span class="n">enumerate_epoch</span><span class="p">():</span>
-<span class="g g-Whitespace">    </span><span class="mi">313</span>     <span class="n">callbacks</span><span class="o">.</span><span class="n">on_train_batch_begin</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">314</span>     <span class="n">logs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_function</span><span class="p">(</span><span class="n">iterator</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">315</span>     <span class="n">logs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pythonify_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">316</span>     <span class="n">callbacks</span><span class="o">.</span><span class="n">on_train_batch_end</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/util/traceback_utils.py:150,</span> in <span class="ni">filter_traceback.&lt;locals&gt;.error_handler</span><span class="nt">(*args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">148</span> <span class="n">filtered_tb</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">150</span>   <span class="k">return</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">151</span> <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">152</span>   <span class="n">filtered_tb</span> <span class="o">=</span> <span class="n">_process_traceback_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py:833,</span> in <span class="ni">Function.__call__</span><span class="nt">(self, *args, **kwds)</span>
-<span class="g g-Whitespace">    </span><span class="mi">830</span> <span class="n">compiler</span> <span class="o">=</span> <span class="s2">&quot;xla&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jit_compile</span> <span class="k">else</span> <span class="s2">&quot;nonXla&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">832</span> <span class="k">with</span> <span class="n">OptionalXlaContext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_jit_compile</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">833</span>   <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">835</span> <span class="n">new_tracing_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">experimental_get_tracing_count</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">836</span> <span class="n">without_tracing</span> <span class="o">=</span> <span class="p">(</span><span class="n">tracing_count</span> <span class="o">==</span> <span class="n">new_tracing_count</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py:878,</span> in <span class="ni">Function._call</span><span class="nt">(self, *args, **kwds)</span>
-<span class="g g-Whitespace">    </span><span class="mi">875</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
-<span class="g g-Whitespace">    </span><span class="mi">876</span> <span class="c1"># In this case we have not created variables on the first call. So we can</span>
-<span class="g g-Whitespace">    </span><span class="mi">877</span> <span class="c1"># run the first trace but we should fail if variables are created.</span>
-<span class="ne">--&gt; </span><span class="mi">878</span> <span class="n">results</span> <span class="o">=</span> <span class="n">tracing_compilation</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">879</span>     <span class="n">args</span><span class="p">,</span> <span class="n">kwds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variable_creation_config</span>
-<span class="g g-Whitespace">    </span><span class="mi">880</span> <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">881</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_created_variables</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">882</span>   <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Creating variables on a non-first call to a function&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">883</span>                    <span class="s2">&quot; decorated with tf.function.&quot;</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py:139,</span> in <span class="ni">call_function</span><span class="nt">(args, kwargs, tracing_options)</span>
-<span class="g g-Whitespace">    </span><span class="mi">137</span> <span class="n">bound_args</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_type</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">138</span> <span class="n">flat_inputs</span> <span class="o">=</span> <span class="n">function</span><span class="o">.</span><span class="n">function_type</span><span class="o">.</span><span class="n">unpack_inputs</span><span class="p">(</span><span class="n">bound_args</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">139</span> <span class="k">return</span> <span class="n">function</span><span class="o">.</span><span class="n">_call_flat</span><span class="p">(</span>  <span class="c1"># pylint: disable=protected-access</span>
-<span class="g g-Whitespace">    </span><span class="mi">140</span>     <span class="n">flat_inputs</span><span class="p">,</span> <span class="n">captured_inputs</span><span class="o">=</span><span class="n">function</span><span class="o">.</span><span class="n">captured_inputs</span>
-<span class="g g-Whitespace">    </span><span class="mi">141</span> <span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/concrete_function.py:1322,</span> in <span class="ni">ConcreteFunction._call_flat</span><span class="nt">(self, tensor_inputs, captured_inputs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1318</span> <span class="n">possible_gradient_type</span> <span class="o">=</span> <span class="n">gradients_util</span><span class="o">.</span><span class="n">PossibleTapeGradientTypes</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1319</span> <span class="k">if</span> <span class="p">(</span><span class="n">possible_gradient_type</span> <span class="o">==</span> <span class="n">gradients_util</span><span class="o">.</span><span class="n">POSSIBLE_GRADIENT_TYPES_NONE</span>
-<span class="g g-Whitespace">   </span><span class="mi">1320</span>     <span class="ow">and</span> <span class="n">executing_eagerly</span><span class="p">):</span>
-<span class="g g-Whitespace">   </span><span class="mi">1321</span>   <span class="c1"># No tape is watching; skip to running the function.</span>
-<span class="ne">-&gt; </span><span class="mi">1322</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inference_function</span><span class="o">.</span><span class="n">call_preflattened</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1323</span> <span class="n">forward_backward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select_forward_and_backward_functions</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1324</span>     <span class="n">args</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1325</span>     <span class="n">possible_gradient_type</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1326</span>     <span class="n">executing_eagerly</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1327</span> <span class="n">forward_function</span><span class="p">,</span> <span class="n">args_with_tangents</span> <span class="o">=</span> <span class="n">forward_backward</span><span class="o">.</span><span class="n">forward</span><span class="p">()</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py:216,</span> in <span class="ni">AtomicFunction.call_preflattened</span><span class="nt">(self, args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">214</span> <span class="k">def</span> <span class="nf">call_preflattened</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">core</span><span class="o">.</span><span class="n">Tensor</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">215</span><span class="w">   </span><span class="sd">&quot;&quot;&quot;Calls with flattened tensor inputs and returns the structured output.&quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">216</span>   <span class="n">flat_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call_flat</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">217</span>   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_type</span><span class="o">.</span><span class="n">pack_output</span><span class="p">(</span><span class="n">flat_outputs</span><span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/polymorphic_function/atomic_function.py:251,</span> in <span class="ni">AtomicFunction.call_flat</span><span class="nt">(self, *args)</span>
-<span class="g g-Whitespace">    </span><span class="mi">249</span> <span class="k">with</span> <span class="n">record</span><span class="o">.</span><span class="n">stop_recording</span><span class="p">():</span>
-<span class="g g-Whitespace">    </span><span class="mi">250</span>   <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bound_context</span><span class="o">.</span><span class="n">executing_eagerly</span><span class="p">():</span>
-<span class="ne">--&gt; </span><span class="mi">251</span>     <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bound_context</span><span class="o">.</span><span class="n">call_function</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">252</span>         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">253</span>         <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">254</span>         <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">function_type</span><span class="o">.</span><span class="n">flat_outputs</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">255</span>     <span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">256</span>   <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">257</span>     <span class="n">outputs</span> <span class="o">=</span> <span class="n">make_call_op_in_graph</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">258</span>         <span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">259</span>         <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">),</span>
-<span class="g g-Whitespace">    </span><span class="mi">260</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_bound_context</span><span class="o">.</span><span class="n">function_call_options</span><span class="o">.</span><span class="n">as_attrs</span><span class="p">(),</span>
-<span class="g g-Whitespace">    </span><span class="mi">261</span>     <span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/context.py:1500,</span> in <span class="ni">Context.call_function</span><span class="nt">(self, name, tensor_inputs, num_outputs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1498</span> <span class="n">cancellation_context</span> <span class="o">=</span> <span class="n">cancellation</span><span class="o">.</span><span class="n">context</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1499</span> <span class="k">if</span> <span class="n">cancellation_context</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="ne">-&gt; </span><span class="mi">1500</span>   <span class="n">outputs</span> <span class="o">=</span> <span class="n">execute</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1501</span>       <span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1502</span>       <span class="n">num_outputs</span><span class="o">=</span><span class="n">num_outputs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1503</span>       <span class="n">inputs</span><span class="o">=</span><span class="n">tensor_inputs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1504</span>       <span class="n">attrs</span><span class="o">=</span><span class="n">attrs</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1505</span>       <span class="n">ctx</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1506</span>   <span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1507</span> <span class="k">else</span><span class="p">:</span>
-<span class="g g-Whitespace">   </span><span class="mi">1508</span>   <span class="n">outputs</span> <span class="o">=</span> <span class="n">execute</span><span class="o">.</span><span class="n">execute_with_cancellation</span><span class="p">(</span>
-<span class="g g-Whitespace">   </span><span class="mi">1509</span>       <span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
-<span class="g g-Whitespace">   </span><span class="mi">1510</span>       <span class="n">num_outputs</span><span class="o">=</span><span class="n">num_outputs</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1514</span>       <span class="n">cancellation_manager</span><span class="o">=</span><span class="n">cancellation_context</span><span class="p">,</span>
-<span class="g g-Whitespace">   </span><span class="mi">1515</span>   <span class="p">)</span>
-
-<span class="nn">File /opt/miniconda3/lib/python3.12/site-packages/tensorflow/python/eager/execute.py:53,</span> in <span class="ni">quick_execute</span><span class="nt">(op_name, num_outputs, inputs, attrs, ctx, name)</span>
-<span class="g g-Whitespace">     </span><span class="mi">51</span> <span class="k">try</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">52</span>   <span class="n">ctx</span><span class="o">.</span><span class="n">ensure_initialized</span><span class="p">()</span>
-<span class="ne">---&gt; </span><span class="mi">53</span>   <span class="n">tensors</span> <span class="o">=</span> <span class="n">pywrap_tfe</span><span class="o">.</span><span class="n">TFE_Py_Execute</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">_handle</span><span class="p">,</span> <span class="n">device_name</span><span class="p">,</span> <span class="n">op_name</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">54</span>                                       <span class="n">inputs</span><span class="p">,</span> <span class="n">attrs</span><span class="p">,</span> <span class="n">num_outputs</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">55</span> <span class="k">except</span> <span class="n">core</span><span class="o">.</span><span class="n">_NotOkStatusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">56</span>   <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-
-<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
