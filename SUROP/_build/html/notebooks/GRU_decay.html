@@ -833,12 +833,6 @@ document.write(`
             <span class="c1"># Compute new hidden state</span>
             <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">update</span><span class="p">)</span> <span class="o">*</span> <span class="n">h</span> <span class="o">+</span> <span class="n">update</span> <span class="o">*</span> <span class="n">h_tilt</span>
 
-            <span class="c1"># Apply Batch Normalization</span>
-            <span class="c1">#h = self.batch_norm(h)</span>
-
-            <span class="c1"># Apply Dropout</span>
-            <span class="c1">#h = self.dropout(h)</span>
-
             <span class="c1"># Output layer</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">h</span><span class="p">))</span>
 
@@ -946,7 +940,8 @@ Labels_batch shape: torch.Size([16, 1])
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Training loop</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%capture</span>
+<span class="c1"># Training loop</span>
 <span class="n">train_losses</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
@@ -1055,7 +1050,7 @@ Labels_batch shape: torch.Size([16, 1])
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8f2011cc77f418112a7ab75a263870ea2b7c03d327335ff3c6f9aab9bf17b920.png" src="../_images/8f2011cc77f418112a7ab75a263870ea2b7c03d327335ff3c6f9aab9bf17b920.png" />
+<img alt="../_images/2e2640e1f355193d63f619624d1f5499b1bc4f3491b31ee9b9234435c71da9a8.png" src="../_images/2e2640e1f355193d63f619624d1f5499b1bc4f3491b31ee9b9234435c71da9a8.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1094,7 +1089,7 @@ Labels_batch shape: torch.Size([16, 1])
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy: 0.9261
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy: 0.9426
 </pre></div>
 </div>
 </div>
@@ -1111,7 +1106,7 @@ Labels_batch shape: torch.Size([16, 1])
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AUC: 0.9287
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>AUC: 0.9411
 </pre></div>
 </div>
 </div>

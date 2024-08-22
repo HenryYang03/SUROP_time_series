@@ -37,7 +37,7 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-['# Training loop', 'train_losses = []', 'for epoch in range(num_epochs):', '    model.train()', '    total_loss = 0']
+['%%capture', '# Training loop', 'train_losses = []', 'for epoch in range(num_epochs):', '    model.train()']
 ...
 ['        total_loss += loss.item()', '    ', '    avg_loss = total_loss / len(train_loader)', '    train_losses.append(avg_loss)', "    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}')"]
 -------------------
